@@ -12,7 +12,7 @@
 
   <script>
     // ============ CONFIGURACIÓN DE ACCESO ============
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzGEoRBkcsP64u2BFEuTZpiZfoUxZ7ENl0JzS62rwOC-CGHyBmgPka_n-fMLY6yXcS/exec';
+    const API_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT_EXEC'; // Ej: https://script.google.com/macros/s/.../exec
     const API_TOKEN = 'CAMBIA_ESTA_CLAVE_123';
     // ==================================================
   </script>
@@ -490,9 +490,7 @@
     function procesarQRGarita() {
       const jsonStr = document.getElementById('txtQRSimulado').value.trim();
       try {
-        // Si escanea el QR limpio, buscamos en la memoria o asumimos datos temporales, pero idealmente recibimos el objeto o texto
         let parsed = JSON.parse(jsonStr);
-        // Si escaneó el objeto completo guardado en el navegador de la misma tablet/celular:
         currentGaritaData = window.ultimoViajeGenerado || parsed;
 
         document.getElementById('resultGarita').classList.remove('hidden');
