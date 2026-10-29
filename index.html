@@ -32,7 +32,7 @@
 
   <main class="max-w-4xl mx-auto p-4 flex-1 w-full">
 
-    <!-- PANTALLA DE SELECCIÓN DE INICIO (2 BOTONES PRINCIPALES) -->
+    <!-- PANTALLA DE SELECCIÓN DE INICIO -->
     <section id="viewSelector" class="flex flex-col items-center justify-center min-h-[75vh] space-y-6 text-center">
       <div class="bg-white p-8 rounded-3xl shadow-md border border-slate-200 max-w-md w-full space-y-6">
         <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-inner">
@@ -76,12 +76,23 @@
           <span>🚍</span> 1. Configuración de Unidad y Ruta
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Seleccionar Empresa Primero -->
           <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">Seleccionar Placa:</label>
-            <select id="selectPlaca" onchange="onVehiculoSelect()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
-              <option value="">-- Cargando vehículos... --</option>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Empresa Transportista:</label>
+            <select id="selectEmpresa" onchange="onEmpresaSelect()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
+              <option value="">-- Seleccionar Empresa --</option>
             </select>
           </div>
+
+          <!-- Placa Filtrada -->
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Seleccionar Placa:</label>
+            <select id="selectPlaca" onchange="onVehiculoSelect()" disabled class="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
+              <option value="">-- Primero elija una empresa --</option>
+            </select>
+          </div>
+
           <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Unidad de Negocio:</label>
             <select id="selectUnidadNegocio" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
@@ -104,10 +115,6 @@
               <option value="">-- Cargando rutas... --</option>
             </select>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">Empresa Transportista:</label>
-            <input id="inputEmpresa" type="text" readonly class="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600" placeholder="Empresa transportista">
-          </div>
           <div class="md:col-span-2">
             <label class="block text-xs font-medium text-slate-500 mb-1">Conductor Responsable:</label>
             <input id="inputConductor" type="text" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" placeholder="Nombre completo del conductor">
@@ -129,9 +136,10 @@
 
       <!-- ESCANEO / CÁMARA -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <h2 class="text-base font-bold text-slate-700 flex items-center gap-2">
-          <span>📷</span> 2. Registro de Fotocheck (Personal Autorizado)
-        </h2>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center font-bold text-xs">2</span>
+          <h2 class="text-base font-bold text-slate-700">Registro de Fotocheck (Personal Autorizado)</h2>
+        </div>
         <button onclick="toggleScanner()" id="btnScannerToggle" class="w-full bg-indigo-900 hover:bg-indigo-950 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-sm">
           📷 Activar Cámara para Escanear
         </button>
@@ -143,8 +151,8 @@
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-slate-100">
-          <input id="inputCodigoScan" type="text" placeholder="O ingrese DNI / Código y presione Enter..." class="flex-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500" onkeypress="if(event.key==='Enter') agregarPasajero()">
-          <button onclick="agregarPasajero()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition">Agregar</button>
+          <input id="inputCodigoScan" type="text" placeholder="Ingrese DNI / Código..." class="flex-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500" onkeydown="if(event.key === 'Enter') { event.preventDefault(); agregarPasajero(); }">
+          <button onclick="agregarPasajero()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition shadow-sm active:scale-95">Agregar</button>
         </div>
       </div>
 
@@ -181,7 +189,7 @@
           <button onclick="stopScannerGarita()" class="mt-3 w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2 rounded-lg">Cerrar Cámara</button>
         </div>
 
-        <textarea id="txtQRSimulado" rows="2" placeholder="O pegue el contenido del código QR aquí..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono mb-3"></textarea>
+        <textarea id="txtQRSimulado" rows="2" placeholder="O pegue el ID del QR aquí..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono mb-3"></textarea>
         <button onclick="procesarQRGarita()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">Verificar Bus y Pasajeros</button>
       </div>
 
@@ -233,6 +241,7 @@
     let listaPasajeros = [];
     let html5QrCode = null;
     let scannerIsRunning = false;
+    let isProcessingScan = false;
     let html5QrGarita = null;
     let garitaScannerRunning = false;
 
@@ -260,11 +269,43 @@
     function cargarVehiculos(datos) {
       if (!Array.isArray(datos)) return;
       vehiculosBD = datos;
-      const select = document.getElementById('selectPlaca');
-      select.innerHTML = '<option value="">-- Seleccionar Placa --</option>';
-      datos.forEach(v => {
-        select.innerHTML += `<option value="${v.placa}">${v.placa} - ${v.tipo} (${v.capacidad} pas.)</option>`;
+      const empresas = [...new Set(datos.map(v => v.empresa))].filter(Boolean).sort();
+      const selectEmpresa = document.getElementById('selectEmpresa');
+      selectEmpresa.innerHTML = '<option value="">-- Seleccionar Empresa --</option>';
+      empresas.forEach(emp => {
+        selectEmpresa.innerHTML += `<option value="${emp}">${emp}</option>`;
       });
+    }
+
+    function onEmpresaSelect() {
+      const empresaElegida = document.getElementById('selectEmpresa').value;
+      const selectPlaca = document.getElementById('selectPlaca');
+      
+      vehiculoSeleccionado = null;
+      document.getElementById('txtAforoCounter').innerText = "0 / 0";
+      document.getElementById('barProgress').style.width = "0%";
+
+      if (!empresaElegida) {
+        selectPlaca.innerHTML = '<option value="">-- Primero elija una empresa --</option>';
+        selectPlaca.disabled = true;
+        selectPlaca.className = "w-full p-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold";
+        return;
+      }
+
+      const vehiculosFiltrados = vehiculosBD.filter(v => v.empresa === empresaElegida);
+      selectPlaca.innerHTML = '<option value="">-- Seleccionar Placa --</option>';
+      vehiculosFiltrados.forEach(v => {
+        selectPlaca.innerHTML += `<option value="${v.placa}">${v.placa} - ${v.tipo} (${v.capacidad} pas.)</option>`;
+      });
+
+      selectPlaca.disabled = false;
+      selectPlaca.className = "w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500";
+    }
+
+    function onVehiculoSelect() {
+      const placa = document.getElementById('selectPlaca').value;
+      vehiculoSeleccionado = vehiculosBD.find(v => v.placa === placa) || null;
+      actualizarAforo();
     }
 
     function cargarRutas(rutas) {
@@ -276,14 +317,7 @@
       });
     }
 
-    function onVehiculoSelect() {
-      const placa = document.getElementById('selectPlaca').value;
-      vehiculoSeleccionado = vehiculosBD.find(v => v.placa === placa) || null;
-      document.getElementById('inputEmpresa').value = vehiculoSeleccionado ? vehiculoSeleccionado.empresa : '';
-      actualizarAforo();
-    }
-
-    // Cámara Conductor
+    // Cámara Conductor con anti-duplicado
     function toggleScanner() {
       if (scannerIsRunning) { stopScanner(); return; }
       const container = document.getElementById('reader-container');
@@ -292,19 +326,25 @@
 
       container.classList.remove('hidden');
       btn.innerText = "⏳ Iniciando cámara...";
-      statusMsg.innerText = "Solicitando acceso a la cámara...";
+      statusMsg.innerText = "Apunta la cámara al código...";
 
       html5QrCode = new Html5Qrcode("reader");
-      let yaLeido = false;
+      isProcessingScan = false;
+
       html5QrCode.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 150 } },
         (decodedText) => {
-          if (yaLeido) return;
-          yaLeido = true;
+          if (isProcessingScan) return;
+          isProcessingScan = true;
+
           document.getElementById('inputCodigoScan').value = decodedText;
           stopScanner();
-          agregarPasajero();
+          
+          setTimeout(() => {
+            agregarPasajero();
+            isProcessingScan = false;
+          }, 300);
         },
         () => {}
       ).then(() => {
@@ -313,6 +353,7 @@
         statusMsg.innerText = "Apunta al código del fotocheck...";
       }).catch(err => {
         scannerIsRunning = false;
+        isProcessingScan = false;
         container.classList.add('hidden');
         btn.innerText = "📷 Activar Cámara para Escanear";
         alert("❌ Error de Cámara: Asegúrese de usar HTTPS.");
@@ -404,7 +445,7 @@
         <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
           <div>
             <p class="font-bold text-slate-700">${p.nombre}</p>
-            <p class="text-slate-400">Cód: ${p.codigo} | Área: ${p.area} | Sup: ${p.supervisor}</p>
+            <p class="text-slate-400">Cód: ${p.codigo} | Área: ${p.area}</p>
           </div>
           <button onclick="eliminarPasajero(${idx})" class="text-rose-500 font-bold hover:bg-rose-50 p-1 rounded">✕</button>
         </div>
@@ -459,67 +500,71 @@
       };
 
       const container = document.getElementById('qrContainer');
-      container.innerHTML = '';
-      try {
-        window.ultimoViajeGenerado = qrData;
-        const textoQRLeible = JSON.stringify({
-          id: viajeId,
-          placa: vehiculoSeleccionado.placa,
-          unidad: unidadNegocio,
-          cant: listaPasajeros.length,
-          hora: qrData.hora
-        });
+      container.innerHTML = '<p class="text-xs text-indigo-600">Sincronizando viaje en la nube...</p>';
 
-        new QRCode(container, {
-          text: textoQRLeible,
-          width: 200,
-          height: 200,
-          correctLevel: QRCode.CorrectLevel.M
-        });
+      api('guardarViajeActivo', qrData).then(res => {
+        container.innerHTML = '';
+        if (res.success) {
+          window.ultimoViajeGenerado = qrData;
+          
+          new QRCode(container, {
+            text: viajeId,
+            width: 200,
+            height: 200,
+            correctLevel: QRCode.CorrectLevel.M
+          });
 
-        const nota = document.createElement('p');
-        nota.className = "text-xs text-emerald-600 font-bold mt-2";
-        nota.innerText = "¡QR Generado (" + listaPasajeros.length + " pasajeros)!";
-        container.appendChild(nota);
-      } catch (e) {
-        container.innerHTML = '<p class="text-xs text-rose-600">Error al generar el QR.</p>';
-      }
+          const nota = document.createElement('p');
+          nota.className = "text-xs text-emerald-600 font-bold mt-2";
+          nota.innerText = "¡QR Generado (" + listaPasajeros.length + " pasajeros listos para garita)!";
+          container.appendChild(nota);
+        } else {
+          alert("Error al sincronizar viaje: " + res.message);
+        }
+      }).catch(e => {
+        container.innerHTML = '<p class="text-xs text-rose-600">Error de conexión al generar QR.</p>';
+      });
     }
 
     let currentGaritaData = null;
     function procesarQRGarita() {
-      const jsonStr = document.getElementById('txtQRSimulado').value.trim();
-      try {
-        let parsed = JSON.parse(jsonStr);
-        currentGaritaData = window.ultimoViajeGenerado || parsed;
+      const idViajeInput = document.getElementById('txtQRSimulado').value.trim();
+      if (!idViajeInput) { alert("Ingrese o escanee el código del QR."); return; }
 
-        document.getElementById('resultGarita').classList.remove('hidden');
-        document.getElementById('garitaPlaca').innerText = currentGaritaData.placa;
-        document.getElementById('garitaEmpresa').innerText = currentGaritaData.empresa;
-        document.getElementById('garitaUnidad').innerText = currentGaritaData.unidadNegocio || parsed.unidad || 'General';
-        document.getElementById('garitaConductor').innerText = currentGaritaData.conductor || 'No especificado';
-        document.getElementById('garitaRuta').innerText = currentGaritaData.ruta || 'Ruta estándar';
-        document.getElementById('garitaPasajerosCount').innerText = `${currentGaritaData.pasajeros.length} / ${currentGaritaData.capacidad}`;
+      api('getViajeActivo', idViajeInput).then(res => {
+        if (res.success) {
+          currentGaritaData = res.viaje;
 
-        const isExceso = currentGaritaData.pasajeros.length > currentGaritaData.capacidad;
-        const badge = document.getElementById('garitaStatusBadge');
-        if (isExceso) {
-          badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
-          badge.innerText = '⚠️ SOBRECUPO';
+          document.getElementById('resultGarita').classList.remove('hidden');
+          document.getElementById('garitaPlaca').innerText = currentGaritaData.placa;
+          document.getElementById('garitaEmpresa').innerText = currentGaritaData.empresa;
+          document.getElementById('garitaUnidad').innerText = currentGaritaData.unidadNegocio || 'General';
+          document.getElementById('garitaConductor').innerText = currentGaritaData.conductor || 'No especificado';
+          document.getElementById('garitaRuta').innerText = currentGaritaData.ruta || 'Ruta estándar';
+          document.getElementById('garitaPasajerosCount').innerText = `${currentGaritaData.pasajeros.length} / ${currentGaritaData.capacidad}`;
+
+          const isExceso = currentGaritaData.pasajeros.length > currentGaritaData.capacidad;
+          const badge = document.getElementById('garitaStatusBadge');
+          if (isExceso) {
+            badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+            badge.innerText = '⚠️ SOBRECUPO';
+          } else {
+            badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+            badge.innerText = '✅ AFORO OK';
+          }
+
+          document.getElementById('garitaListaDetalle').innerHTML = currentGaritaData.pasajeros.map(p => `
+            <div class="bg-slate-100 p-2 rounded flex justify-between">
+              <span><strong>${p.nombre}</strong> (${p.area})</span>
+              <span class="text-slate-400">Cód: ${p.codigo}</span>
+            </div>
+          `).join('');
         } else {
-          badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
-          badge.innerText = '✅ AFORO OK';
+          alert("❌ " + res.message);
         }
-
-        document.getElementById('garitaListaDetalle').innerHTML = currentGaritaData.pasajeros.map(p => `
-          <div class="bg-slate-100 p-2 rounded flex justify-between">
-            <span><strong>${p.nombre}</strong> (${p.area})</span>
-            <span class="text-slate-400">Cód: ${p.codigo}</span>
-          </div>
-        `).join('');
-      } catch (e) {
-        alert("El código escaneado no es válido.");
-      }
+      }).catch(e => {
+        alert("Error de conexión al verificar el QR en el servidor.");
+      });
     }
 
     function confirmarSalidaInSheets(estado) {
