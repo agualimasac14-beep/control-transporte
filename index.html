@@ -108,12 +108,25 @@
               <option value="PLANTA SANIDAD">PLANTA SANIDAD</option>
             </select>
           </div>
+
+          <!-- TIPO DE OPERACIÓN (INGRESO / SALIDA) -->
           <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">Ruta de Recorrido / Destino:</label>
-            <select id="selectRuta" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
-              <option value="">-- Cargando rutas... --</option>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Tipo de Operación:</label>
+            <select id="selectTipoOperacion" onchange="onTipoOperacionSelect()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
+              <option value="">-- Seleccionar Tipo --</option>
+              <option value="SALIDA">SALIDA</option>
+              <option value="INGRESO">INGRESO</option>
             </select>
           </div>
+
+          <!-- RUTA FILTRADA -->
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-500 mb-1">Ruta de Recorrido / Destino:</label>
+            <select id="selectRuta" disabled class="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500">
+              <option value="">-- Primero elija el tipo de operación --</option>
+            </select>
+          </div>
+
           <div class="md:col-span-2">
             <label class="block text-xs font-medium text-slate-500 mb-1">Conductor Responsable:</label>
             <input id="inputConductor" type="text" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm" placeholder="Nombre completo del conductor">
@@ -236,6 +249,7 @@
     }
 
     let vehiculosBD = [];
+    let rutasBD = [];
     let vehiculoSeleccionado = null;
     let listaPasajeros = [];
     let html5QrCode = null;
@@ -310,11 +324,34 @@
 
     function cargarRutas(rutas) {
       if (!Array.isArray(rutas)) return;
-      const select = document.getElementById('selectRuta');
-      select.innerHTML = '<option value="">-- Seleccionar Ruta / Destino --</option>';
-      rutas.forEach(r => {
-        select.innerHTML += `<option value="${r.nombre}">[${r.tipo}] ${r.nombre}</option>`;
-      });
+      rutasBD = rutas;
+    }
+
+    function onTipoOperacionSelect() {
+      const tipoElegido = document.getElementById('selectTipoOperacion').value.trim().toUpperCase();
+      const selectRuta = document.getElementById('selectRuta');
+      
+      selectRuta.innerHTML = '<option value="">-- Seleccionar Ruta / Destino --</option>';
+
+      if (!tipoElegido) {
+        selectRuta.disabled = true;
+        selectRuta.className = "w-full p-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-semibold";
+        selectRuta.innerHTML = '<option value="">-- Primero elija el tipo de operación --</option>';
+        return;
+      }
+
+      const rutasFiltradas = rutasBD.filter(r => r.tipo.toUpperCase().includes(tipoElegido));
+
+      if (rutasFiltradas.length === 0) {
+        selectRuta.innerHTML = '<option value="">-- No hay rutas para este tipo --</option>';
+      } else {
+        rutasFiltradas.forEach(r => {
+          selectRuta.innerHTML += `<option value="${r.nombre}">[${r.tipo}] ${r.nombre}</option>`;
+        });
+      }
+
+      selectRuta.disabled = false;
+      selectRuta.className = "w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500";
     }
 
     function toggleScanner() {
@@ -478,6 +515,8 @@
       if (!vehiculoSeleccionado) { alert("Selecciona un vehículo."); return; }
       const unidadNegocio = document.getElementById('selectUnidadNegocio').value;
       if (!unidadNegocio) { alert("Selecciona la Unidad de Negocio."); return; }
+      const tipoOperacion = document.getElementById('selectTipoOperacion').value;
+      if (!tipoOperacion) { alert("Selecciona el Tipo de Operación."); return; }
       const ruta = document.getElementById('selectRuta').value;
       if (!ruta) { alert("Selecciona la Ruta de Recorrido."); return; }
       if (listaPasajeros.length === 0) { alert("Debe registrar al menos un pasajero."); return; }
@@ -490,6 +529,7 @@
         capacidad: vehiculoSeleccionado.capacidad,
         empresa: vehiculoSeleccionado.empresa,
         unidadNegocio: unidadNegocio,
+        tipoOperacion: tipoOperacion,
         conductor: document.getElementById('inputConductor').value || 'Sin Conductor',
         ruta: ruta,
         pasajeros: listaPasajeros,
